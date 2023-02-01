@@ -20,7 +20,6 @@ pipeline {
       }
 
       steps {
-          checkout scm
           script {
               env.VERSION = env.BRANCH_NAME.split("/")[1]
           }
@@ -44,7 +43,7 @@ pipeline {
            timeout(10) {
              withKubeConfig([credentialsId: 'k8s-config-file']) {
                sh """
-				   kubectl exec -it deployments/backend-frappe-deployment -- bash -c "bench --site localhost migrate"
+				   kubectl exec -it deployments/backend-frappe-deployment -- bash -c "bench --site erpnext.halocom.io migrate"
                """
              }
            }
