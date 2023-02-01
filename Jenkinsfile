@@ -13,25 +13,12 @@ pipeline {
   }
 
   stages {
-
-    stage('Checkout Source') {
-      when {
-          branch 'release/*'
-      }
-
-      steps {
-          script {
-              env.VERSION = env.BRANCH_NAME.split("/")[1]
-          }
-      }
-    }
-
 	stage('Pull new soure'){
 		steps {
            timeout(10) {
              withKubeConfig([credentialsId: 'k8s-config-file']) {
                sh """
-				   kubectl exec -it deployments/backend-frappe-deployment -- bash -c "cd apps/erpnext && git pull && git checkout ${BRANCH_NAME}"
+				   kubectl -n erpnext exec -it deployments/backend-frappe-deployment -- bash -c "cd apps/erpnext && git pull && git checkout ${BRANCH_NAME}"
                """
              }
            }
@@ -43,7 +30,7 @@ pipeline {
            timeout(10) {
              withKubeConfig([credentialsId: 'k8s-config-file']) {
                sh """
-				   kubectl exec -it deployments/backend-frappe-deployment -- bash -c "bench --site erpnext.halocom.io migrate"
+				   kubectl -n erpnext exec -it deployments/backend-frappe-deployment -- bash -c "bench --site erpnext.halocom.io migrate"
                """
              }
            }
